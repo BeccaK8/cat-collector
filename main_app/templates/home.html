@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat Collector</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block content %}
+
     <h1>HOME</h1>
 
-    <img alt="cat" src="https://www.dailypaws.com/thmb/XWkIP_iclPQsVqi2VSXYj7b9f_g=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/orange-kitten-955480082-2000-49e46f6827c543b589399e3332efdb41.jpg">
-</body>
-</html>
+    <img class="responsive-img" alt="cat" src="https://www.dailypaws.com/thmb/XWkIP_iclPQsVqi2VSXYj7b9f_g=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/orange-kitten-955480082-2000-49e46f6827c543b589399e3332efdb41.jpg">
+
+{% endblock %}
