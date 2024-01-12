@@ -6,4 +6,5 @@ urlpatterns = [
     # second arg - view to render
     # third arg - names the route
     path('', views.home, name='home'),
+    path('about/', views.about, name="about"),
 ]
