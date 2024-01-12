@@ -2,4 +2,4 @@
 
 Let's collect some cats
 
-A Python/Django
+A Python/Django tutorial
