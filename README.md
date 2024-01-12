@@ -2,4 +2,4 @@
 
 Let's collect some cats
 
-A Python/Django tutorial
+![Cat ERD](./main_app/static/images/catERD.png)
