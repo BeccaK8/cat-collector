@@ -1,10 +1,11 @@
 from django.shortcuts import render
+from .models import Cat
 
-cats = [
-    {'name': 'Lolo', 'breed': 'tabby', 'description': 'furry little demon', 'age': 3},
-    {'name': 'Sachi', 'breed': 'calico', 'description': 'gentle and loving', 'age': 2},
-    {'name': 'Chunky Monkey', 'breed': 'long hair', 'description': 'sweet and cuddly', 'age': 0},
-]
+# cats = [
+#     {'name': 'Lolo', 'breed': 'tabby', 'description': 'furry little demon', 'age': 3},
+#     {'name': 'Sachi', 'breed': 'calico', 'description': 'gentle and loving', 'age': 2},
+#     {'name': 'Chunky Monkey', 'breed': 'long hair', 'description': 'sweet and cuddly', 'age': 0},
+# ]
 
 # Define the home view - '/'
 # GET - Home
@@ -18,5 +19,13 @@ def about(request):
 
 # Index View - shows all cats at '/cats'
 def cats_index(request):
+    # collect our objects from the database
+    # this uses the object's object on the at model class
+    # the objects object has a method called all
+    # all grabs all of the entities using the parent model
+    cats = Cat.objects.all()
+    # print(cats)
+    # for cat in cats:
+    #     print(cat)
     # just like in EJS we can pass data to views
     return render(request, 'cats/index.html', { 'cats': cats })
