@@ -29,3 +29,9 @@ def cats_index(request):
     #     print(cat)
     # just like in EJS we can pass data to views
     return render(request, 'cats/index.html', { 'cats': cats })
+
+# Detail View - shows one cat at '/cats/:id'
+def cats_detail(request, cat_id):
+    # find one cat with its id
+    cat = Cat.objects.get(id=cat_id)
+    return render(request, 'cats/detail.html', { 'cat': cat })
