@@ -1,6 +1,6 @@
 from django.shortcuts import render
 # import class-based-views (CBVs)
-from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Cat
 
 # cats = [
@@ -59,3 +59,9 @@ class CatUpdate(UpdateView):
     # let's make it so you can't rename a cat
     # so we need to customize fields
     fields = [ 'breed', 'description', 'age' ]
+
+# Delete View - extends DeleteView class
+class CatDelete(DeleteView):
+    model = Cat
+
+    success_url = '/cats'
