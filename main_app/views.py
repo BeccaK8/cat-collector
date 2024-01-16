@@ -1,6 +1,6 @@
 from django.shortcuts import render
 # import class-based-views (CBVs)
-from django.views.generic.edit import CreateView
+from django.views.generic.edit import CreateView, UpdateView
 from .models import Cat
 
 # cats = [
@@ -52,4 +52,10 @@ class CatCreate(CreateView):
     # we can add other options inside this view
     # we don't need success_url since we added get_absolute_url to Cat Model
     # success_url = '/cats/{cat_id}'
-    
+
+# Update View - extends UpdateView class
+class CatUpdate(UpdateView):
+    model = Cat
+    # let's make it so you can't rename a cat
+    # so we need to customize fields
+    fields = [ 'breed', 'description', 'age' ]
