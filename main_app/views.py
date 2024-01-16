@@ -1,4 +1,6 @@
 from django.shortcuts import render
+# import class-based-views (CBVs)
+from django.views.generic.edit import CreateView
 from .models import Cat
 
 # cats = [
@@ -35,3 +37,19 @@ def cats_detail(request, cat_id):
     # find one cat with its id
     cat = Cat.objects.get(id=cat_id)
     return render(request, 'cats/detail.html', { 'cat': cat })
+
+# Create View
+# inherit from CBV - CreateView - to make our cats create view
+class CatCreate(CreateView):
+    model = Cat
+    
+    # this view creates a form so we need to identify which fields to use:
+    # fields attribute is required and can be used to 
+    # limit or change the ordering of the attributes from the Cat model
+    # that are generatd in the  ModelForm passed to the template
+    fields = '__all__'
+
+    # we can add other options inside this view
+    # we don't need success_url since we added get_absolute_url to Cat Model
+    # success_url = '/cats/{cat_id}'
+    

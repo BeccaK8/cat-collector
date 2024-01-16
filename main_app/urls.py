@@ -11,5 +11,6 @@ urlpatterns = [
     
     # route for the detail page of our cats
     # we need an id, as well as a way to refer to the id
-    path('cats/<int:cat_id>', views.cats_detail, name='detail')
+    path('cats/<int:cat_id>', views.cats_detail, name='detail'),
+    path('cats/create', views.CatCreate.as_view(),  name='cats_create'),
 ]
