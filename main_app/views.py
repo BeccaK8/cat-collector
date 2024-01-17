@@ -1,8 +1,11 @@
 from django.shortcuts import render, redirect
+
 # import class-based-views (CBVs)
+from django.views.generic import ListView
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from .models import Cat
+from .models import Cat, Toy
 from .forms import FeedingForm
 
 # cats = [
@@ -90,3 +93,32 @@ def add_feeding(request, cat_id):
 
     # finally, redirect to cat detail page
     return redirect('detail', cat_id=cat_id)
+
+# TOY views
+# Toy List
+class ToyList(ListView):
+    model = Toy
+    template_name = 'toys/index.html'
+
+# Toy Detail
+class ToyDetail(DetailView):
+    model = Toy
+    template_name = 'toys/detail.html'
+
+# Toy Create
+class ToyCreate(CreateView):
+    model = Toy
+    fields = [ 'name', 'color' ]
+
+    def form_valid(self, form):
+        return super().form_valid(form)
+
+# Toy Update
+class ToyUpdate(UpdateView):
+    model = Toy
+    fields = [ 'name', 'color' ]
+    
+# Toy Delete
+class ToyDelete(DeleteView):
+    model = Toy
+    success_url = '/toys'
