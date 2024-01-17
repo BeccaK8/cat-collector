@@ -27,4 +27,6 @@ urlpatterns = [
     # once this is all set up correctly, we will add code to 
     # associate our toys with our cats, as well as a url to 
     # unassociate toys and cats
+    path('cats/<int:cat_id>/assoc_toy/<int:toy_id>/', views.assoc_toy, name='assoc_toy'),
+    path('cats/<int:cat_id>/unassoc_toy/<int:toy_id>/', views.unassoc_toy, name='unassoc_toy'),
 ]

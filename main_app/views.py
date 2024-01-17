@@ -41,10 +41,20 @@ def cats_index(request):
 def cats_detail(request, cat_id):
     # find one cat with its id
     cat = Cat.objects.get(id=cat_id)
+
+    # here we'll get a value list of the toy ids associated with the cat
+    id_list = cat.toys.all().values_list('id')
+    # this is for all toys a cat does not have
+    toys_cat_doesnt_have = Toy.objects.exclude(id__in=id_list)
+
     # instantiate the FeedingForm to be rendered in our template
     feeding_form = FeedingForm()
 
-    return render(request, 'cats/detail.html', { 'cat': cat, 'feeding_form': feeding_form })
+    return render(request, 'cats/detail.html', { 
+        'cat': cat, 
+        'feeding_form': feeding_form,
+        'toys': toys_cat_doesnt_have
+    })
 
 
 
@@ -122,3 +132,17 @@ class ToyUpdate(UpdateView):
 class ToyDelete(DeleteView):
     model = Toy
     success_url = '/toys'
+
+# Add/Associate Toy to Cat
+def assoc_toy(request, cat_id, toy_id):
+    # we target the cat and pass it the toy id
+    Cat.objects.get(id=cat_id).toys.add(toy_id)
+
+    return redirect('detail', cat_id=cat_id)
+
+# Unassociate/Remove Toy from Cat
+def unassoc_toy(request, cat_id, toy_id):
+    # we target the cat and pass it the toy id
+    Cat.objects.get(id=cat_id).toys.remove(toy_id)
+
+    return redirect('detail', cat_id=cat_id)
