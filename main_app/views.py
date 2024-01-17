@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 # import class-based-views (CBVs)
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
 from .models import Cat
+from .forms import FeedingForm
 
 # cats = [
 #     {'name': 'Lolo', 'breed': 'tabby', 'description': 'furry little demon', 'age': 3},
@@ -36,7 +38,12 @@ def cats_index(request):
 def cats_detail(request, cat_id):
     # find one cat with its id
     cat = Cat.objects.get(id=cat_id)
-    return render(request, 'cats/detail.html', { 'cat': cat })
+    # instantiate the FeedingForm to be rendered in our template
+    feeding_form = FeedingForm()
+
+    return render(request, 'cats/detail.html', { 'cat': cat, 'feeding_form': feeding_form })
+
+
 
 # Create View
 # inherit from CBV - CreateView - to make our cats create view
@@ -65,3 +72,21 @@ class CatDelete(DeleteView):
     model = Cat
 
     success_url = '/cats'
+
+# FEEDING AND RELATIONSHIP VIEW FUNCTIONS
+# This is to add a feeding to a cat
+def add_feeding(request, cat_id):
+    # Create a ModelForm instance using the data in request.POST
+    form = FeedingForm(request.POST)
+    # it's also important to validate forms
+    # Django gives us a bit in function for that
+    if form.is_valid():
+        # don't want to save the feeding to the db 
+        # until we have a cat_id
+        new_feeding = form.save(commit=False)
+        # add the cat_id
+        new_feeding.cat_id = cat_id
+        new_feeding.save()
+
+    # finally, redirect to cat detail page
+    return redirect('detail', cat_id=cat_id)
