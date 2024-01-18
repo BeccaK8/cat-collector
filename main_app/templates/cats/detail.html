@@ -5,6 +5,7 @@
 
     <div class="row">
         <div class="col s6">
+            <!-- Detail Section -->
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">{{ cat.name }}</span>
@@ -21,8 +22,26 @@
                     <a href="{% url 'cats_delete' cat.id %}">Delete</a>
                 </div>
             </div>
+            <!-- End Detail Section -->
+            
+            <!-- Photo Section -->
+            {% for photo in cat.photo_set.all %}
+            <img src="{{ photo.url }}" alt="" class="responsive-img card-panel">
+            {% empty %}
+            <div class="card-panel teal-text center-align">No Photos Uploaded</div>
+            {% endfor %}
+
+            <form action="{% url 'add_photo' cat.id %}" enctype="multipart/form-data" method="post" class="card-panel">
+                {% csrf_token %}
+                <input type="file" name="photo-file">
+                <br><br>
+                <button type="submit" class="btn">Upload Photo</button>
+            </form>
+            <!-- End Photo Section -->
         </div>
+
         <div class="col s6">
+            <!-- Feeding Form -->
             <form action="{% url 'add_feeding' cat.id %}" method="POST">
                 {% csrf_token %}
                 <!-- render our inputs -->
@@ -30,15 +49,17 @@
                 {{ feeding_form.as_p }}
                 <input type="submit" value="Add Feeding" class="btn">
             </form>
-            <hr>
+            <!-- End Feeding Form -->
+            <br>
+            <!-- Feeding Section -->
             {% if cat.fed_for_today %}
-                <div class="card-panel teal-text center-align">
-                    {{ cat.name }} has been fed all meals for today
-                </div>
+            <div class="card-panel teal-text center-align">
+                {{ cat.name }} has been fed all meals for today
+            </div>
             {% else %}
-                <div class="card-panel red-text center-align">
-                    {{ cat.name }} might be hungry
-                </div>
+            <div class="card-panel red-text center-align">
+                {{ cat.name }} might be hungry
+            </div>
             {% endif %}
             <hr>
             <table class="striped">
@@ -50,66 +71,68 @@
                 </thead>
                 <tbody>
                     {% for feeding in cat.feeding_set.all %}
-                        <tr>
-                            <td>{{ feeding.date }}</td>
-                            <td>{{ feeding.get_meal_display }}</td>
-                        </tr>
+                    <tr>
+                        <td>{{ feeding.date }}</td>
+                        <td>{{ feeding.get_meal_display }}</td>
+                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            <!-- Feeding Section -->
         </div>
     </div>
 
-    <!-- Toys Section -->
+    <!-- Toy Section -->
     <hr>
     <div class="row">
         <div class="col s6">
             <h3>{{ cat.name }}'s Toys</h3>
             {% if cat.toys.count %}
-                {% for toy in cat.toys.all %}
-                    <div class="card">
-                        <div class="card-content">
-                            <span class="card-title">
-                                A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
-                            </span>
-                        </div>
-                        <div class="card-action">
-                            <form action="{% url 'unassoc_toy' cat.id toy.id %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn red">-</button>
-                            </form>
-                        </div>
-                    </div>
-                {% endfor %}
+            {% for toy in cat.toys.all %}
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">
+                        A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
+                    </span>
+                </div>
+                <div class="card-action">
+                    <form action="{% url 'unassoc_toy' cat.id toy.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn red">-</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
             {% else %}
-                <h5>No Toys 😿</h5>
+            <h5>No Toys 😿</h5>
             {% endif %}
         </div>
         <!-- Available toys will come after this line -->
         <div class="col s6">
             <h3>Available Toys</h3>
             {% if toys.count %}
-                {% for toy in toys.all %}
-                    <div class="card">
-                        <div class="card-content">
-                            <span class="card-title">
-                                A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
-                            </span>
-                        </div>
-                        <div class="card-action">
-                            <form action="{% url 'assoc_toy' cat.id toy.id %}" method="POST">
-                                {% csrf_token %}
-                                <button type="submit" class="btn">Add</button>
-                            </form>
-                        </div>
-                    </div>
-                {% endfor %}
+            {% for toy in toys.all %}
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">
+                        A <span style="color: {{ toy.color }}">{{ toy.color }}</span> {{ toy.name }}
+                    </span>
+                </div>
+                <div class="card-action">
+                    <form action="{% url 'assoc_toy' cat.id toy.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn">Add</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
             {% else %}
-                <h5>{{cat.name}} Already Has All Toys Available</h5>
+            <h5>{{cat.name}} Already Has All Toys Available</h5>
             {% endif %}
         </div>
     </div>
-
+    <!-- End Toy Section -->
+    
     <script>
         const dateEl = document.getElementById('id_date');
         //  M is Materialize's global variable

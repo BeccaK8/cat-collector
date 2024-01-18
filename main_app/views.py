@@ -1,3 +1,7 @@
+import uuid
+import boto3
+import os
+
 from django.shortcuts import render, redirect
 
 # import class-based-views (CBVs)
@@ -5,7 +9,7 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
-from .models import Cat, Toy
+from .models import Cat, Toy, Photo
 from .forms import FeedingForm
 
 # cats = [
@@ -145,4 +149,28 @@ def unassoc_toy(request, cat_id, toy_id):
     # we target the cat and pass it the toy id
     Cat.objects.get(id=cat_id).toys.remove(toy_id)
 
+    return redirect('detail', cat_id=cat_id)
+
+
+# Photo Views
+def add_photo(request, cat_id):
+    # photo-file will be the "name" of the attribute on the <input>
+    photo_file = request.FILES.get('photo-file', None)
+    if photo_file:
+        s3 = boto3.client('s3')
+        # need a unique "key" for S3 
+        # need image file extension
+        key = uuid.uuid4().hex[:6] + photo_file.name[photo_file.name.rfind('.'):]
+        # in case something goes wrong:
+        try:
+            bucket = os.environ['S3_BUCKET']
+            s3.upload_fileobj(photo_file, bucket, key)
+            
+            # build the full url string
+            url = f"{os.environ['S3_BASE_URL']}{bucket}/{key}"
+            # assign to cat_id or cat
+            Photo.objects.create(url=url, cat_id=cat_id)
+        except Exception as e:
+            print('An error occurred uploading file to S3')
+            print(e)
     return redirect('detail', cat_id=cat_id)
