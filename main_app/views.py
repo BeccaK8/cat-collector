@@ -9,6 +9,9 @@ from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
+from django.contrib.auth import login
+from django.contrib.auth.forms import UserCreationForm
+
 from .models import Cat, Toy, Photo
 from .forms import FeedingForm
 
@@ -71,11 +74,18 @@ class CatCreate(CreateView):
     # fields attribute is required and can be used to 
     # limit or change the ordering of the attributes from the Cat model
     # that are generatd in the  ModelForm passed to the template
-    fields = '__all__'
+    fields = ['name', 'breed', 'description', 'age']
 
     # we can add other options inside this view
     # we don't need success_url since we added get_absolute_url to Cat Model
     # success_url = '/cats/{cat_id}'
+
+    # This inherited method is called when a cat form is submitted
+    def form_valid(self, form):
+        # Assign the logged in user (self.request.user)
+        form.instance.user = self.request.user
+        # Let the CreateView do its job
+        return super().form_valid(form)
 
 # Update View - extends UpdateView class
 class CatUpdate(UpdateView):
@@ -174,3 +184,24 @@ def add_photo(request, cat_id):
             print('An error occurred uploading file to S3')
             print(e)
     return redirect('detail', cat_id=cat_id)
+
+
+# USER views
+def signup(request):
+    error_message = ''
+    if request.method == 'POST':
+        # Create a 'user' form object that includes data from the browser
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            # Add user to database
+            user = form.save()
+            # Log in user via code
+            login(request, user)
+            return redirect('index')
+        else:
+            error_message = 'Invalid sign up - try again'
+    
+    # A bad POST or a GET request so render with an empty form
+    form = UserCreationForm()
+    context = { 'form': form, 'error_message': error_message }
+    return render(request, 'registration/signup.html', context)
