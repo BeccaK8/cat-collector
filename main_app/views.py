@@ -11,6 +11,8 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from django.contrib.auth import login
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Cat, Toy, Photo
 from .forms import FeedingForm
@@ -32,12 +34,13 @@ def about(request):
     return render(request, 'about.html')
 
 # Index View - shows all cats at '/cats'
+@login_required
 def cats_index(request):
     # collect our objects from the database
     # this uses the object's object on the at model class
     # the objects object has a method called all
     # all grabs all of the entities using the parent model
-    cats = Cat.objects.all()
+    cats = Cat.objects.filter(user=request.user)
     # print(cats)
     # for cat in cats:
     #     print(cat)
@@ -45,6 +48,7 @@ def cats_index(request):
     return render(request, 'cats/index.html', { 'cats': cats })
 
 # Detail View - shows one cat at '/cats/:id'
+@login_required
 def cats_detail(request, cat_id):
     # find one cat with its id
     cat = Cat.objects.get(id=cat_id)
@@ -67,7 +71,7 @@ def cats_detail(request, cat_id):
 
 # Create View
 # inherit from CBV - CreateView - to make our cats create view
-class CatCreate(CreateView):
+class CatCreate(LoginRequiredMixin, CreateView):
     model = Cat
     
     # this view creates a form so we need to identify which fields to use:
@@ -88,20 +92,21 @@ class CatCreate(CreateView):
         return super().form_valid(form)
 
 # Update View - extends UpdateView class
-class CatUpdate(UpdateView):
+class CatUpdate(LoginRequiredMixin, UpdateView):
     model = Cat
     # let's make it so you can't rename a cat
     # so we need to customize fields
     fields = [ 'breed', 'description', 'age' ]
 
 # Delete View - extends DeleteView class
-class CatDelete(DeleteView):
+class CatDelete(LoginRequiredMixin, DeleteView):
     model = Cat
 
     success_url = '/cats'
 
 # FEEDING AND RELATIONSHIP VIEW FUNCTIONS
 # This is to add a feeding to a cat
+@login_required
 def add_feeding(request, cat_id):
     # Create a ModelForm instance using the data in request.POST
     form = FeedingForm(request.POST)
@@ -120,17 +125,17 @@ def add_feeding(request, cat_id):
 
 # TOY views
 # Toy List
-class ToyList(ListView):
+class ToyList(LoginRequiredMixin, ListView):
     model = Toy
     template_name = 'toys/index.html'
 
 # Toy Detail
-class ToyDetail(DetailView):
+class ToyDetail(LoginRequiredMixin, DetailView):
     model = Toy
     template_name = 'toys/detail.html'
 
 # Toy Create
-class ToyCreate(CreateView):
+class ToyCreate(LoginRequiredMixin, CreateView):
     model = Toy
     fields = [ 'name', 'color' ]
 
@@ -138,16 +143,17 @@ class ToyCreate(CreateView):
         return super().form_valid(form)
 
 # Toy Update
-class ToyUpdate(UpdateView):
+class ToyUpdate(LoginRequiredMixin, UpdateView):
     model = Toy
     fields = [ 'name', 'color' ]
     
 # Toy Delete
-class ToyDelete(DeleteView):
+class ToyDelete(LoginRequiredMixin, DeleteView):
     model = Toy
     success_url = '/toys'
 
 # Add/Associate Toy to Cat
+@login_required
 def assoc_toy(request, cat_id, toy_id):
     # we target the cat and pass it the toy id
     Cat.objects.get(id=cat_id).toys.add(toy_id)
@@ -155,6 +161,7 @@ def assoc_toy(request, cat_id, toy_id):
     return redirect('detail', cat_id=cat_id)
 
 # Unassociate/Remove Toy from Cat
+@login_required
 def unassoc_toy(request, cat_id, toy_id):
     # we target the cat and pass it the toy id
     Cat.objects.get(id=cat_id).toys.remove(toy_id)
@@ -163,6 +170,7 @@ def unassoc_toy(request, cat_id, toy_id):
 
 
 # Photo Views
+@login_required
 def add_photo(request, cat_id):
     # photo-file will be the "name" of the attribute on the <input>
     photo_file = request.FILES.get('photo-file', None)

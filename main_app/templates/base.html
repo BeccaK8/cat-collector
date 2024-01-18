@@ -22,6 +22,9 @@
                     </li>
                 </ul>
                 <ul class="right">
+                    {% if user.is_authenticated %}
+                        <li>Welcome, {{ user.username }}</li>
+                    {% endif %}
                     <!-- <li><a href="/cats">Cats</a></li> -->
                     <!-- <li><a href="/about">About</a></li> -->
                     <li><a href="{% url 'about' %}">About</a></li>
